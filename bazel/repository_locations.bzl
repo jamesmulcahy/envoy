@@ -54,10 +54,9 @@ REPOSITORY_LOCATIONS = dict(
         urls = ["https://files.pythonhosted.org/packages/c6/b4/510617906f8e0c5660e7d96fbc5585113f83ad547a3989b80297ac72a74c/thrift-0.11.0.tar.gz"],
     ),
     com_github_c_ares_c_ares = dict(
-        version = "c15f403875ababb1149215d49683d720b3d035c7",
         sha256 = "0ad4f9748752909b00a0ca8d2b6a075e0a7a06ee922d9dcf9625d2562d7c894a",
-        strip_prefix = "c-ares-{version}",
-        urls = ["https://github.com/c-ares/c-ares/archive/{version}.tar.gz"],
+        strip_prefix = "c-ares-c15f403875ababb1149215d49683d720b3d035c7",
+        urls = ["https://github.com/c-ares/c-ares/archive/c15f403875ababb1149215d49683d720b3d035c7.tar.gz"],
     ),
     com_github_circonus_labs_libcircllhist = dict(
         sha256 = "8165aa25e529d7d4b9ae849d3bf30371255a99d6db0421516abcff23214cdc2c",
