@@ -60,7 +60,11 @@ TEST(ResolverTest, FromProtoAddress) {
 
   envoy::config::core::v3::Address pipe_address;
   pipe_address.mutable_pipe()->set_path("/foo/bar");
-  EXPECT_EQ("/foo/bar", resolveProtoAddress(pipe_address)->asString());
+  pipe_address.mutable_pipe()->set_mode(0777);
+  auto addressInstance = resolveProtoAddress(pipe_address);
+  EXPECT_EQ(Type::Pipe, addressInstance->type());
+  EXPECT_EQ(0777, addressInstance->pipe()->mode());
+  EXPECT_EQ("/foo/bar", addressInstance->asString());
 }
 
 TEST(ResolverTest, InternalListenerNameFromProtoAddress) {
