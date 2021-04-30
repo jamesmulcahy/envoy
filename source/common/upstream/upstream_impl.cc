@@ -925,16 +925,21 @@ ClusterInfoImpl::upstreamHttpProtocol(absl::optional<Http::Protocol> downstream_
   if (downstream_protocol.has_value() &&
       features_ & Upstream::ClusterInfo::Features::USE_DOWNSTREAM_PROTOCOL) {
     return {downstream_protocol.value()};
-  } else if (features_ & Upstream::ClusterInfo::Features::USE_ALPN) {
-    ASSERT(!(features_ & Upstream::ClusterInfo::Features::HTTP3));
-    return {Http::Protocol::Http2, Http::Protocol::Http11};
-  } else {
-    if (features_ & Upstream::ClusterInfo::Features::HTTP3) {
-      return {Http::Protocol::Http3};
-    }
-    return {(features_ & Upstream::ClusterInfo::Features::HTTP2) ? Http::Protocol::Http2
-                                                                 : Http::Protocol::Http11};
   }
+
+  if (features_ & Upstream::ClusterInfo::Features::USE_ALPN) {
+    if (!(features_ & Upstream::ClusterInfo::Features::HTTP3)) {
+      return {Http::Protocol::Http2, Http::Protocol::Http11};
+    }
+    return {Http::Protocol::Http3, Http::Protocol::Http2, Http::Protocol::Http11};
+  }
+
+  if (features_ & Upstream::ClusterInfo::Features::HTTP3) {
+    return {Http::Protocol::Http3};
+  }
+
+  return {(features_ & Upstream::ClusterInfo::Features::HTTP2) ? Http::Protocol::Http2
+                                                               : Http::Protocol::Http11};
 }
 
 ClusterImplBase::ClusterImplBase(
@@ -1254,6 +1259,10 @@ Http::Http1::CodecStats& ClusterInfoImpl::http1CodecStats() const {
 
 Http::Http2::CodecStats& ClusterInfoImpl::http2CodecStats() const {
   return Http::Http2::CodecStats::atomicGet(http2_codec_stats_, *stats_scope_);
+}
+
+Http::Http3::CodecStats& ClusterInfoImpl::http3CodecStats() const {
+  return Http::Http3::CodecStats::atomicGet(http3_codec_stats_, *stats_scope_);
 }
 
 std::pair<absl::optional<double>, absl::optional<uint32_t>> ClusterInfoImpl::getRetryBudgetParams(
